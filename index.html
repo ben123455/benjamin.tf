@@ -2,11 +2,85 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>benjamin.tf</title>
-  <link rel="stylesheet" href="style.css">
+  <title>benjamin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      background: #0d0d0d;
+      color: #f2f2f2;
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+      background-image: url('https://images.unsplash.com/photo-1518309675165-85f25838c0a7?auto=format&fit=crop&w=1950&q=80');
+      background-size: cover;
+      background-position: center;
+    }
+
+    .overlay {
+      background-color: rgba(20, 20, 20, 0.85);
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 0 20px #00ffff44;
+      max-width: 600px;
+      width: 90%;
+      margin: 20px;
+    }
+
+    h1 {
+      font-size: 2em;
+      color: #00ffff;
+      margin-bottom: 0;
+    }
+
+    p {
+      font-size: 1em;
+      margin-top: 5px;
+      font-style: italic;
+      color: #ccc;
+    }
+
+    .links a {
+      display: inline-block;
+      margin: 10px;
+      padding: 10px 20px;
+      color: #fff;
+      text-decoration: none;
+      border: 1px solid #00ffff;
+      border-radius: 8px;
+      transition: background 0.3s;
+    }
+
+    .links a:hover {
+      background: #00ffff22;
+    }
+
+    iframe.spotify {
+      margin-top: 30px;
+      border-radius: 12px;
+      width: 100%;
+      height: 200px;
+      border: none;
+    }
+  </style>
 </head>
 <body>
-  <h1>hi</h1>
-  <script src="script.js"></script>
+  <div class="overlay">
+    <h1>@benjamin</h1>
+    <p>just a sigma</p>
+    <div class="links">
+      <a href="https://discord.com/users548894775252877313" target="_blank">Discord</a>
+      <a href="https://github.com/ben123455" target="_blank">GitHub</a>
+    </div>
+    <iframe class="spotify"
+      src="https://open.spotify.com/embed/track/5wzPDiNVgJ5Rvhjne9Uj3F?utm_source=generator"
+      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+      loading="lazy">
+    </iframe>
+  </div>
 </body>
 </html>
