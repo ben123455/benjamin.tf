@@ -29,6 +29,7 @@
       max-width: 600px;
       width: 90%;
       margin: 20px;
+      display: none; /* Hidden initially */
     }
 
     h1 {
@@ -66,9 +67,34 @@
       height: 200px;
       border: none;
     }
+
+    .start-button {
+      padding: 15px 30px;
+      background-color: #00ffff;
+      color: #0d0d0d;
+      font-size: 1.2em;
+      border-radius: 25px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    }
+
+    .start-button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.7);
+    }
+
+    .start-button:active {
+      transform: scale(1);
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    }
+
   </style>
 </head>
 <body>
+  <button class="start-button" onclick="startMusic()">Click to Start</button>
+
   <div class="overlay">
     <h1>@benjamin</h1>
     <p>just a sigma</p>
@@ -76,11 +102,22 @@
       <a href="https://discord.com/users548894775252877313" target="_blank">Discord</a>
       <a href="https://github.com/ben123455" target="_blank">GitHub</a>
     </div>
-    <iframe class="spotify"
-      src="https://open.spotify.com/embed/track/5wzPDiNVgJ5Rvhjne9Uj3F?utm_source=generator"
+    <iframe id="spotifyPlayer" class="spotify"
+      src="https://open.spotify.com/embed/track/5wzPDiNVgJ5Rvhjne9Uj3F?utm_source=generator&autoplay=1"
       allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
       loading="lazy">
     </iframe>
   </div>
+
+  <script>
+    function startMusic() {
+      document.querySelector('.overlay').style.display = 'block';
+      document.querySelector('.start-button').style.display = 'none';
+      
+      const iframe = document.getElementById('spotifyPlayer');
+      
+
+    }
+  </script>
 </body>
 </html>
