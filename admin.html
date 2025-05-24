@@ -11,142 +11,81 @@
       padding: 40px;
       text-align: center;
     }
-
-    .container {
-      background-color: rgba(20, 20, 20, 0.9);
-      padding: 40px;
-      border-radius: 16px;
-      box-shadow: 0 0 20px #00ffff44;
-      max-width: 500px;
-      margin: auto;
-    }
-
-    h1 {
-      color: #00ffff;
-      font-size: 2em;
-      margin-bottom: 20px;
-      text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff;
-    }
-
     input, button {
-      padding: 15px;
-      margin-top: 15px;
+      padding: 10px;
+      margin: 10px;
       font-size: 1em;
       border-radius: 8px;
       border: none;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      width: 100%;
+      width: 200px; /* Match text boxes and buttons width */
     }
-
     button {
       background-color: #00ffff;
       color: #000;
       cursor: pointer;
-      box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+      transition: all 0.3s ease;
     }
-
     button:hover {
       transform: scale(1.05);
       box-shadow: 0 0 20px rgba(0, 255, 255, 0.7);
     }
-
-    button:active {
-      transform: scale(1);
-      box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
-    }
-
     .key-list {
       margin-top: 30px;
       text-align: left;
       max-width: 500px;
       margin-inline: auto;
-      display: none;
     }
-
     .key-item {
       display: flex;
       justify-content: space-between;
       margin-bottom: 5px;
     }
-
+    .key-item button {
+      padding: 5px 10px;
+      font-size: 0.9em; /* Smaller button */
+    }
     .used {
       text-decoration: line-through;
       color: #888;
     }
-
-    #adminSection {
-      display: none;
-      animation: fadeIn 0.5s ease-in-out forwards;
-    }
-
-    @keyframes fadeIn {
-      0% { opacity: 0; }
-      100% { opacity: 1; }
-    }
-
-    .error {
-      color: #ff4081;
-      margin-top: 10px;
-      font-size: 1.2em;
+    .show-used-checkbox {
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Admin Panel</h1>
-    <p>Enter the password to access the key generator:</p>
-    
-    <input type="password" id="passwordInput" placeholder="Enter password" />
-    <button onclick="checkPassword()">Submit</button>
+  <h1>Admin Panel</h1>
+  <p>Generate and manage spin keys</p>
 
-    <div id="errorMessage" class="error"></div>
+  <input type="number" id="keyCount" placeholder="Number of keys" min="1" />
+  <button onclick="generateKeys()">Generate</button>
+  <button onclick="exportKeys()">Export</button>
 
-    <!-- Admin Section (hidden by default) -->
-    <div id="adminSection">
-      <h2>Generate and Manage Spin Keys</h2>
-      <input type="number" id="keyCount" placeholder="Number of keys" min="1" />
-      <button onclick="generateKeys()">Generate Keys</button>
-      <button onclick="exportKeys()">Export Keys</button>
-
-      <div class="key-list" id="keyList"></div>
-    </div>
+  <div class="show-used-checkbox">
+    <label for="showUsedKeys">
+      <input type="checkbox" id="showUsedKeys" onchange="renderKeys()"> Show Used Keys
+    </label>
   </div>
+
+  <div class="key-list" id="keyList"></div>
 
   <script>
     const KEY_STORAGE = 'spin_keys';
-    const PASSWORD = 'lunar';
 
-    // Load keys from local storage
     function loadKeys() {
       return JSON.parse(localStorage.getItem(KEY_STORAGE) || '[]');
     }
 
-    // Save keys to local storage
     function saveKeys(keys) {
       localStorage.setItem(KEY_STORAGE, JSON.stringify(keys));
       renderKeys();
     }
 
-    // Function to validate the entered password
-    function checkPassword() {
-      const enteredPassword = document.getElementById('passwordInput').value;
-      const errorMessage = document.getElementById('errorMessage');
-
-      if (enteredPassword === PASSWORD) {
-        document.getElementById('adminSection').style.display = 'block';
-        errorMessage.style.display = 'none';  // Hide error message if password is correct
-      } else {
-        errorMessage.textContent = 'Incorrect password! Please try again.';
-      }
-    }
-
-    // Generate keys based on user input
     function generateKeys() {
       const count = parseInt(document.getElementById('keyCount').value);
-      if (!count || count <= 0) return alert('Enter a valid number of keys');
+      if (!count || count <= 0) return alert('Enter a valid number');
       let keys = loadKeys();
 
-      // Generate new keys
       for (let i = 0; i < count; i++) {
         keys.push({ code: Math.random().toString(36).substr(2, 6).toUpperCase(), used: false });
       }
@@ -154,7 +93,12 @@
       saveKeys(keys);
     }
 
-    // Export keys to a text file
+    function markUsed(index) {
+      let keys = loadKeys();
+      keys[index].used = true;
+      saveKeys(keys);
+    }
+
     function exportKeys() {
       const keys = loadKeys();
       const exportText = keys.map(k => `${k.code}, ${k.used ? 'USED' : 'UNUSED'}`).join('\\n');
@@ -165,24 +109,20 @@
       link.click();
     }
 
-    // Mark a key as used
-    function markUsed(index) {
-      let keys = loadKeys();
-      keys[index].used = true;
-      saveKeys(keys);
-    }
-
-    // Render all keys to the page
     function renderKeys() {
       const keys = loadKeys();
+      const showUsedKeys = document.getElementById('showUsedKeys').checked;
       const list = document.getElementById('keyList');
-      list.innerHTML = keys.map((k, i) => `
-        <div class="key-item">
-          <span class="${k.used ? 'used' : ''}">${k.code}</span>
-          ${!k.used ? '<button onclick="markUsed(' + i + ')">Mark Used</button>' : ''}
-        </div>
-      `).join('');
-      list.style.display = keys.length > 0 ? 'block' : 'none';
+
+      list.innerHTML = keys
+        .filter(k => showUsedKeys || !k.used)
+        .map((k, i) => `
+          <div class="key-item">
+            <span class="${k.used ? 'used' : ''}">${k.code}</span>
+            ${!k.used ? `<button onclick="markUsed(${i})">Mark Used</button>` : ''}
+          </div>
+        `)
+        .join('');
     }
 
     renderKeys();
