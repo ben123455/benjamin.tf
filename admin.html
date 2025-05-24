@@ -11,90 +11,150 @@
       padding: 40px;
       text-align: center;
     }
+
+    .container {
+      background-color: rgba(20, 20, 20, 0.9);
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 0 20px #00ffff44;
+      max-width: 500px;
+      margin: auto;
+    }
+
+    h1 {
+      color: #00ffff;
+      font-size: 2em;
+      margin-bottom: 20px;
+      text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff;
+    }
+
     input, button {
-      padding: 10px;
-      margin: 10px;
+      padding: 15px;
+      margin-top: 15px;
       font-size: 1em;
       border-radius: 8px;
       border: none;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      width: 100%;
     }
+
     button {
       background-color: #00ffff;
       color: #000;
       cursor: pointer;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
     }
+
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.7);
+    }
+
+    button:active {
+      transform: scale(1);
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    }
+
     .key-list {
       margin-top: 30px;
       text-align: left;
       max-width: 500px;
       margin-inline: auto;
+      display: none;
     }
+
     .key-item {
       display: flex;
       justify-content: space-between;
       margin-bottom: 5px;
     }
+
     .used {
       text-decoration: line-through;
       color: #888;
     }
+
+    #adminSection {
+      display: none;
+      animation: fadeIn 0.5s ease-in-out forwards;
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    .error {
+      color: #ff4081;
+      margin-top: 10px;
+      font-size: 1.2em;
+    }
   </style>
 </head>
 <body>
-  <h1>Admin Panel</h1>
-  <p>Generate and manage spin keys</p>
+  <div class="container">
+    <h1>Admin Panel</h1>
+    <p>Enter the password to access the key generator:</p>
+    
+    <input type="password" id="passwordInput" placeholder="Enter password" />
+    <button onclick="checkPassword()">Submit</button>
 
-  <input type="number" id="keyCount" placeholder="Number of keys" min="1" />
-  <button onclick="generateKeys()">Generate</button>
-  <button onclick="exportKeys()">Export</button>
+    <div id="errorMessage" class="error"></div>
 
-  <div class="key-list" id="keyList"></div>
+    <!-- Admin Section (hidden by default) -->
+    <div id="adminSection">
+      <h2>Generate and Manage Spin Keys</h2>
+      <input type="number" id="keyCount" placeholder="Number of keys" min="1" />
+      <button onclick="generateKeys()">Generate Keys</button>
+      <button onclick="exportKeys()">Export Keys</button>
+
+      <div class="key-list" id="keyList"></div>
+    </div>
+  </div>
 
   <script>
     const KEY_STORAGE = 'spin_keys';
+    const PASSWORD = 'lunar';
 
-    // Function to load keys from localStorage
+    // Load keys from local storage
     function loadKeys() {
       return JSON.parse(localStorage.getItem(KEY_STORAGE) || '[]');
     }
 
-    // Function to save keys to localStorage and re-render them
+    // Save keys to local storage
     function saveKeys(keys) {
       localStorage.setItem(KEY_STORAGE, JSON.stringify(keys));
       renderKeys();
     }
 
-    // Function to generate new keys
-    function generateKeys() {
-      const count = parseInt(document.getElementById('keyCount').value);
-      if (!count || count <= 0) {
-        alert('Enter a valid number of keys');
-        return; // Exit the function if the input is invalid
+    // Function to validate the entered password
+    function checkPassword() {
+      const enteredPassword = document.getElementById('passwordInput').value;
+      const errorMessage = document.getElementById('errorMessage');
+
+      if (enteredPassword === PASSWORD) {
+        document.getElementById('adminSection').style.display = 'block';
+        errorMessage.style.display = 'none';  // Hide error message if password is correct
+      } else {
+        errorMessage.textContent = 'Incorrect password! Please try again.';
       }
-
-      console.log(`Generating ${count} keys...`);
-
-      let keys = loadKeys();
-
-      for (let i = 0; i < count; i++) {
-        const newKey = {
-          code: Math.random().toString(36).substr(2, 6).toUpperCase(),
-          used: false
-        };
-        keys.push(newKey);
-      }
-
-      saveKeys(keys); // Save the generated keys
     }
 
-    // Function to mark a key as used
-    function markUsed(index) {
+    // Generate keys based on user input
+    function generateKeys() {
+      const count = parseInt(document.getElementById('keyCount').value);
+      if (!count || count <= 0) return alert('Enter a valid number of keys');
       let keys = loadKeys();
-      keys[index].used = true;
+
+      // Generate new keys
+      for (let i = 0; i < count; i++) {
+        keys.push({ code: Math.random().toString(36).substr(2, 6).toUpperCase(), used: false });
+      }
+
       saveKeys(keys);
     }
 
-    // Function to export keys to a .txt file
+    // Export keys to a text file
     function exportKeys() {
       const keys = loadKeys();
       const exportText = keys.map(k => `${k.code}, ${k.used ? 'USED' : 'UNUSED'}`).join('\\n');
@@ -105,7 +165,14 @@
       link.click();
     }
 
-    // Function to render keys to the UI
+    // Mark a key as used
+    function markUsed(index) {
+      let keys = loadKeys();
+      keys[index].used = true;
+      saveKeys(keys);
+    }
+
+    // Render all keys to the page
     function renderKeys() {
       const keys = loadKeys();
       const list = document.getElementById('keyList');
@@ -115,9 +182,9 @@
           ${!k.used ? '<button onclick="markUsed(' + i + ')">Mark Used</button>' : ''}
         </div>
       `).join('');
+      list.style.display = keys.length > 0 ? 'block' : 'none';
     }
 
-    // Initial render of the keys when the page loads
     renderKeys();
   </script>
 </body>
