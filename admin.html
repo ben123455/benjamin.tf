@@ -51,26 +51,59 @@
     .show-used-checkbox {
       margin-top: 20px;
     }
+    /* Password prompt styling */
+    #passwordPrompt {
+      display: block;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(0, 0, 0, 0.8);
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 0 20px #00ffff;
+    }
   </style>
 </head>
 <body>
-  <h1>Admin Panel</h1>
-  <p>Generate and manage spin keys</p>
-
-  <input type="number" id="keyCount" placeholder="Number of keys" min="1" />
-  <button onclick="generateKeys()">Generate</button>
-  <button onclick="exportKeys()">Export</button>
-
-  <div class="show-used-checkbox">
-    <label for="showUsedKeys">
-      <input type="checkbox" id="showUsedKeys" onchange="renderKeys()"> Show Used Keys
-    </label>
+  <!-- Password Prompt Modal -->
+  <div id="passwordPrompt">
+    <h2>Enter Password</h2>
+    <input type="password" id="passwordInput" placeholder="Enter password" />
+    <button onclick="checkPassword()">Submit</button>
+    <p id="errorMessage" style="color: red; display: none;">Incorrect password. Try again.</p>
   </div>
 
-  <div class="key-list" id="keyList"></div>
+  <div id="adminContent" style="display: none;">
+    <h1>Admin Panel</h1>
+    <p>Generate and manage spin keys</p>
+
+    <input type="number" id="keyCount" placeholder="Number of keys" min="1" />
+    <button onclick="generateKeys()">Generate</button>
+    <button onclick="exportKeys()">Export</button>
+
+    <div class="show-used-checkbox">
+      <label for="showUsedKeys">
+        <input type="checkbox" id="showUsedKeys" onchange="renderKeys()"> Show Used Keys
+      </label>
+    </div>
+
+    <div class="key-list" id="keyList"></div>
+  </div>
 
   <script>
     const KEY_STORAGE = 'spin_keys';
+    const PASSWORD = 'lunar';
+
+    function checkPassword() {
+      const enteredPassword = document.getElementById('passwordInput').value.trim();
+      if (enteredPassword === PASSWORD) {
+        document.getElementById('passwordPrompt').style.display = 'none';
+        document.getElementById('adminContent').style.display = 'block';
+      } else {
+        document.getElementById('errorMessage').style.display = 'block';
+      }
+    }
 
     function loadKeys() {
       return JSON.parse(localStorage.getItem(KEY_STORAGE) || '[]');
