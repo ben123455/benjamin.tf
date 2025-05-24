@@ -1,109 +1,142 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Admin Panel - Spin Keys</title>
+  <meta charset="UTF-8">
+  <title>benjamin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body {
-      background: #000;
-      color: #00ffff;
+      margin: 0;
+      background: #000000;
+      color: #f2f2f2;
       font-family: 'Inter', sans-serif;
-      padding: 40px;
-      text-align: center;
-    }
-    input, button {
-      padding: 10px;
-      margin: 10px;
-      font-size: 1em;
-      border-radius: 8px;
-      border: none;
-    }
-    button {
-      background-color: #00ffff;
-      color: #000;
-      cursor: pointer;
-    }
-    .key-list {
-      margin-top: 30px;
-      text-align: left;
-      max-width: 500px;
-      margin-inline: auto;
-    }
-    .key-item {
       display: flex;
-      justify-content: space-between;
-      margin-bottom: 5px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+      background-image: url('https://images.unsplash.com/photo-1518309675165-85f25838c0a7?auto=format&fit=crop&w=1950&q=80');
+      background-size: cover;
+      background-position: center;
+      overflow: hidden;
     }
-    .used {
-      text-decoration: line-through;
-      color: #888;
+
+    .overlay {
+      background-color: rgba(20, 20, 20, 0.85);
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 0 20px #00ffff44;
+      max-width: 600px;
+      width: 90%;
+      margin: 20px;
+      display: none;
+    }
+
+    h1 {
+      font-size: 2em;
+      color: #00ffff;
+      margin-bottom: 0;
+      animation: glow 1.5s ease-in-out infinite alternate;
+    }
+
+    p {
+      font-size: 1em;
+      margin-top: 5px;
+      font-style: italic;
+      color: #ccc;
+      animation: glow 1.5s ease-in-out infinite alternate;
+    }
+
+    .links a {
+      display: inline-block;
+      margin: 10px;
+      padding: 10px 20px;
+      color: #fff;
+      text-decoration: none;
+      border: 1px solid #00ffff;
+      border-radius: 8px;
+      transition: background 0.3s;
+      animation: glow 1.5s ease-in-out infinite alternate;
+    }
+
+    .links a:hover {
+      background: #00ffff22;
+    }
+
+    .start-button {
+      padding: 15px 30px;
+      background-color: #00ffff;
+      color: #0d0d0d;
+      font-size: 1.2em;
+      border-radius: 25px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+      animation: glow 1.5s ease-in-out infinite alternate;
+    }
+
+    .start-button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.7);
+    }
+
+    .start-button:active {
+      transform: scale(1);
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    }
+
+    @keyframes glow {
+      0%, 50%, 100% {
+        text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff, 0 0 15px #00ffff, 0 0 20px #00ffff, 0 0 25px #00ffff;
+      }
+    }
+
+    /* Hide iframe player */
+    #soundcloud-player {
+      display: none;
     }
   </style>
 </head>
 <body>
-  <h1>Admin Panel</h1>
-  <p>Generate and manage spin keys</p>
+  <button class="start-button" onclick="startMusic()">Click to Start</button>
 
-  <input type="number" id="keyCount" placeholder="Number of keys" min="1" />
-  <button onclick="generateKeys()">Generate</button>
-  <button onclick="exportKeys()">Export</button>
+  <div class="overlay">
+    <h1>@benjamin</h1>
+    <p>just a sigma</p>
+    <div class="links">
+      <a href="https://discord.com/users548894775252877313" target="_blank">Discord</a>
+      <a href="wheel.html">Go to Wheel</a>
+      <a href="admin.html">Go to Admin</a>
+    </div>
+  </div>
 
-  <div class="key-list" id="keyList"></div>
+  <!-- Hidden SoundCloud player -->
+  <iframe 
+    id="soundcloud-player"
+    width="100%" 
+    height="166" 
+    scrolling="no" 
+    frameborder="no" 
+    allow="autoplay"
+    src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/4batz/act-ii-date-8-remix&color=%2300ffff&auto_play=true&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false">
+  </iframe>
 
   <script>
-    const KEY_STORAGE = 'spin_keys';
+    function startMusic() {
+      document.querySelector('.overlay').style.display = 'block';
+      document.querySelector('.start-button').style.display = 'none';
 
-    function getKeys() {
-      return JSON.parse(localStorage.getItem(KEY_STORAGE) || '[]');
+      // Force playback on user interaction
+      const iframe = document.getElementById('soundcloud-player');
+      iframe.style.display = 'block';
+
+      // Use postMessage API to play the SoundCloud widget
+      iframe.contentWindow.postMessage(JSON.stringify({
+        method: 'play'
+      }), '*');
     }
-
-    function saveKeys(keys) {
-      localStorage.setItem(KEY_STORAGE, JSON.stringify(keys));
-      renderKeys();
-    }
-
-    function generateKeys() {
-      const count = parseInt(document.getElementById('keyCount').value);
-      if (!count || count <= 0) return alert('Enter a valid number');
-
-      let keys = getKeys();
-
-      for (let i = 0; i < count; i++) {
-        const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-        keys.push({ code, used: false });
-      }
-
-      saveKeys(keys);
-    }
-
-    function markUsed(index) {
-      const keys = getKeys();
-      keys[index].used = true;
-      saveKeys(keys);
-    }
-
-    function exportKeys() {
-      const keys = getKeys();
-      const output = keys.map(k => `${k.code},${k.used ? 'USED' : 'UNUSED'}`).join('\\n');
-      const blob = new Blob([output], { type: 'text/plain' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = 'spin_keys.txt';
-      link.click();
-    }
-
-    function renderKeys() {
-      const keys = getKeys();
-      const container = document.getElementById('keyList');
-      container.innerHTML = keys.map((k, i) => \`
-        <div class="key-item">
-          <span class="\${k.used ? 'used' : ''}">\${k.code}</span>
-          \${!k.used ? '<button onclick="markUsed(' + i + ')">Mark Used</button>' : ''}
-        </div>
-      \`).join('');
-    }
-
-    renderKeys();
   </script>
 </body>
 </html>
