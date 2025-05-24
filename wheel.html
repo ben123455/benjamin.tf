@@ -27,21 +27,21 @@
 
     input, button {
       margin-top: 10px;
-      padding: 10px;
+      padding: 15px;
       font-size: 1em;
       border-radius: 8px;
       border: none;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     button {
       background-color: #00ffff;
       color: #000;
       cursor: pointer;
-      transition: all 0.3s ease;
     }
 
     button:hover {
-      transform: scale(1.05);
+      transform: scale(1.1);
       box-shadow: 0 0 20px rgba(0, 255, 255, 0.7);
     }
 
@@ -56,6 +56,63 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      position: relative;
+      transition: transform 2s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    .wheel-box.spin {
+      animation: rotateWheel 3s ease-out forwards;
+    }
+
+    .spin-button {
+      margin-top: 20px;
+      background-color: #ff4081;
+      color: #fff;
+    }
+
+    .spin-button:hover {
+      background-color: #f50057;
+      transform: scale(1.1);
+    }
+
+    .spin-button:active {
+      transform: scale(1);
+      box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+    }
+
+    #result {
+      margin-top: 20px;
+      font-size: 1.5em;
+      color: #00ffff;
+      font-weight: bold;
+      text-transform: uppercase;
+      display: none;
+    }
+
+    /* Keyframe for wheel rotation */
+    @keyframes rotateWheel {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(1440deg); /* 4 full rotations */
+      }
+    }
+
+    /* Animations for showing result */
+    @keyframes showResult {
+      0% {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    #result.show {
+      animation: showResult 0.5s ease-out forwards;
     }
   </style>
 </head>
@@ -67,7 +124,7 @@
 
     <div id="wheel" style="display:none;">
       <div class="wheel-box" id="wheelBox">Ready to Spin</div>
-      <button onclick="spinWheel()">Spin the Wheel</button>
+      <button class="spin-button" onclick="spinWheel()">Spin the Wheel</button>
     </div>
 
     <div id="result" style="margin-top:20px;"></div>
@@ -103,12 +160,18 @@
       if (hasSpun || currentKeyIndex === -1) return;
 
       const wheelBox = document.getElementById("wheelBox");
+      wheelBox.classList.add("spin"); // Trigger the spinning animation
       wheelBox.textContent = "Spinning...";
 
       setTimeout(() => {
         const prize = PRIZES[Math.floor(Math.random() * PRIZES.length)];
-        document.getElementById("result").innerHTML = `<h3>You won: 🎉 ${prize} 🎉</h3>`;
+        const resultText = `<h3>You won: 🎉 ${prize} 🎉</h3>`;
+        const result = document.getElementById("result");
+
+        result.innerHTML = resultText;
+        result.classList.add("show"); // Show the result with animation
         wheelBox.textContent = prize;
+
         hasSpun = true;
 
         const keys = getStoredKeys();
