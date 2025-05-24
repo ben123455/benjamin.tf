@@ -58,9 +58,13 @@
       align-items: center;
       justify-content: center;
       position: relative;
-      transition: transform 4s cubic-bezier(0.25, 0.8, 0.25, 1);
+      transition: transform 5s cubic-bezier(0.25, 0.8, 0.25, 1); /* Increased duration */
       margin-bottom: 20px;
-      display: none; /* Initially hidden */
+      background: #1c1c1c; /* Initial color */
+    }
+
+    .wheel-box.spin {
+      animation: rotateWheel 5s ease-out forwards; /* Spinning for longer */
     }
 
     .spin-button {
@@ -94,7 +98,7 @@
         transform: rotate(0deg);
       }
       100% {
-        transform: rotate(3600deg); /* 10 full rotations */
+        transform: rotate(1440deg); /* 4 full rotations */
       }
     }
 
@@ -170,7 +174,7 @@
 
       const wheelBox = document.getElementById("wheel");
       const randomColor = getRandomColor();
-      wheelBox.style.backgroundColor = randomColor; // Change the wheel color randomly
+      wheelBox.style.borderColor = randomColor; // Change the outer ring color randomly
 
       wheelBox.classList.add("spin"); // Trigger the spinning animation
       wheelBox.textContent = "Spinning...";
@@ -192,10 +196,10 @@
       }, 5000); // Spin for longer (5 seconds)
     }
 
-    // Helper function to get a random color for the wheel
+    // Helper function to get a random color for the outer ring
     function getRandomColor() {
       const colors = [
-        "#FF5733", "#33FF57", "#3357FF", "#F5A623", "#D500F9", "#00E5FF", "#FF1493", "#FF6347"
+        "#FF5733", "#33FF57", "#3357FF", "#F5A623"
       ];
       return colors[Math.floor(Math.random() * colors.length)];
     }
