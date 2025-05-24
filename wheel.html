@@ -46,25 +46,12 @@
       box-shadow: 0 0 20px rgba(0, 255, 255, 0.7);
     }
 
-    .wheel-box {
-      margin-top: 20px;
+    #prize-display {
       font-size: 1.5em;
-      border: 2px dashed #00ffff;
-      padding: 50px;
-      border-radius: 50%;
-      width: 300px;
-      height: 300px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      transition: transform 5s cubic-bezier(0.25, 0.8, 0.25, 1); /* Increased duration */
-      margin-bottom: 20px;
-      background: #1c1c1c; /* Initial color */
-    }
-
-    .wheel-box.spin {
-      animation: rotateWheel 5s ease-out forwards; /* Spinning for longer */
+      margin-top: 20px;
+      color: #00ffff;
+      font-weight: bold;
+      text-transform: uppercase;
     }
 
     .spin-button {
@@ -92,31 +79,6 @@
       display: none;
     }
 
-    /* Keyframe for wheel rotation */
-    @keyframes rotateWheel {
-      0% {
-        transform: rotate(0deg);
-      }
-      100% {
-        transform: rotate(1440deg); /* 4 full rotations */
-      }
-    }
-
-    /* Animations for showing result */
-    @keyframes showResult {
-      0% {
-        opacity: 0;
-        transform: scale(0.8);
-      }
-      100% {
-        opacity: 1;
-        transform: scale(1);
-      }
-    }
-
-    #result.show {
-      animation: showResult 0.5s ease-out forwards;
-    }
   </style>
 </head>
 <body>
@@ -125,10 +87,8 @@
     <input id="keyInput" placeholder="e.g. ABC123" />
     <button onclick="validateKey()">Submit</button>
 
-    <div id="wheel" class="wheel-box">
-      Ready to Spin
-    </div>
-    <button class="spin-button" onclick="spinWheel()" style="display:none;">Spin the Wheel</button>
+    <div id="prize-display">Ready to Spin</div>
+    <button class="spin-button" onclick="spinPrize()" style="display:none;">Spin the Prize</button>
 
     <div id="result" style="margin-top:20px;"></div>
   </div>
@@ -160,7 +120,6 @@
       const index = keys.findIndex(k => k.code === inputKey && !k.used);
 
       if (index !== -1 && !hasSpun) {
-        document.getElementById("wheel").style.display = "block"; // Show the wheel
         document.querySelector(".spin-button").style.display = "inline-block"; // Show the spin button
         currentKeyIndex = index;
       } else {
@@ -168,40 +127,35 @@
       }
     }
 
-    // Spin the wheel with random color change and longer spin duration
-    function spinWheel() {
+    // Function to display random prizes until final one is selected
+    function spinPrize() {
       if (hasSpun || currentKeyIndex === -1) return;
 
-      const wheelBox = document.getElementById("wheel");
-      const randomColor = getRandomColor();
-      wheelBox.style.borderColor = randomColor; // Change the outer ring color randomly
+      const prizeDisplay = document.getElementById("prize-display");
+      const result = document.getElementById("result");
+      let cycleCount = 0;
 
-      wheelBox.classList.add("spin"); // Trigger the spinning animation
-      wheelBox.textContent = "Spinning...";
+      // Random Prize Loop
+      const prizeInterval = setInterval(() => {
+        const randomPrize = PRIZES[Math.floor(Math.random() * PRIZES.length)];
+        prizeDisplay.textContent = randomPrize;
+        cycleCount++;
+        
+        // Stop after 4 seconds and show the final prize
+        if (cycleCount >= 20) { // Show random prizes for 4 seconds
+          clearInterval(prizeInterval);
 
-      setTimeout(() => {
-        const prize = PRIZES[Math.floor(Math.random() * PRIZES.length)];
-        const resultText = `<h3>You won: 🎉 ${prize} 🎉</h3>`;
-        const result = document.getElementById("result");
+          const finalPrize = PRIZES[Math.floor(Math.random() * PRIZES.length)];
+          result.innerHTML = `<h3>You won: 🎉 ${finalPrize} 🎉</h3>`;
+          result.style.display = "block";
+          hasSpun = true;
 
-        result.innerHTML = resultText;
-        result.classList.add("show"); // Show the result with animation
-        wheelBox.textContent = prize;
-
-        hasSpun = true;
-
-        const keys = getStoredKeys();
-        keys[currentKeyIndex].used = true;
-        saveKeys(keys);
-      }, 5000); // Spin for longer (5 seconds)
-    }
-
-    // Helper function to get a random color for the outer ring
-    function getRandomColor() {
-      const colors = [
-        "#FF5733", "#33FF57", "#3357FF", "#F5A623"
-      ];
-      return colors[Math.floor(Math.random() * colors.length)];
+          // Mark the key as used
+          const keys = getStoredKeys();
+          keys[currentKeyIndex].used = true;
+          saveKeys(keys);
+        }
+      }, 200); // Change prize every 200ms
     }
   </script>
 </body>
