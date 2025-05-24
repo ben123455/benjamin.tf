@@ -22,7 +22,8 @@
       border-radius: 16px;
       box-shadow: 0 0 20px #00ffff44;
       width: 90%;
-      max-width: 400px;
+      max-width: 600px;
+      text-align: center;
     }
 
     input, button {
@@ -49,15 +50,16 @@
       margin-top: 20px;
       font-size: 1.5em;
       border: 2px dashed #00ffff;
-      padding: 40px;
+      padding: 50px;
       border-radius: 50%;
-      width: 200px;
-      height: 200px;
+      width: 300px;
+      height: 300px;
       display: flex;
       align-items: center;
       justify-content: center;
       position: relative;
       transition: transform 2s cubic-bezier(0.25, 0.8, 0.25, 1);
+      margin-bottom: 20px;
     }
 
     .wheel-box.spin {
@@ -131,7 +133,11 @@
   </div>
 
   <script>
-    const PRIZES = ["Gift Card", "T-Shirt", "Sticker", "Mug", "Pen", "Keychain"];
+    const PRIZES = [
+      "Mystery Box #1", "Mystery Box #2", "Mystery Box #3", "Mystery Box #4", 
+      "Mystery Box #5", "Mystery Box #6", "Mystery Box #7", "Mystery Box #8", 
+      "Mystery Box #9", "Mystery Box #10"
+    ];
     let hasSpun = false;
     let currentKeyIndex = -1;
 
