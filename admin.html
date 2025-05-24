@@ -53,33 +53,48 @@
   <script>
     const KEY_STORAGE = 'spin_keys';
 
+    // Function to load keys from localStorage
     function loadKeys() {
       return JSON.parse(localStorage.getItem(KEY_STORAGE) || '[]');
     }
 
+    // Function to save keys to localStorage and re-render them
     function saveKeys(keys) {
       localStorage.setItem(KEY_STORAGE, JSON.stringify(keys));
       renderKeys();
     }
 
+    // Function to generate new keys
     function generateKeys() {
       const count = parseInt(document.getElementById('keyCount').value);
-      if (!count || count <= 0) return alert('Enter a valid number');
+      if (!count || count <= 0) {
+        alert('Enter a valid number of keys');
+        return; // Exit the function if the input is invalid
+      }
+
+      console.log(`Generating ${count} keys...`);
+
       let keys = loadKeys();
 
       for (let i = 0; i < count; i++) {
-        keys.push({ code: Math.random().toString(36).substr(2, 6).toUpperCase(), used: false });
+        const newKey = {
+          code: Math.random().toString(36).substr(2, 6).toUpperCase(),
+          used: false
+        };
+        keys.push(newKey);
       }
 
-      saveKeys(keys);
+      saveKeys(keys); // Save the generated keys
     }
 
+    // Function to mark a key as used
     function markUsed(index) {
       let keys = loadKeys();
       keys[index].used = true;
       saveKeys(keys);
     }
 
+    // Function to export keys to a .txt file
     function exportKeys() {
       const keys = loadKeys();
       const exportText = keys.map(k => `${k.code}, ${k.used ? 'USED' : 'UNUSED'}`).join('\\n');
@@ -90,17 +105,19 @@
       link.click();
     }
 
+    // Function to render keys to the UI
     function renderKeys() {
       const keys = loadKeys();
       const list = document.getElementById('keyList');
-      list.innerHTML = keys.map((k, i) => \`
+      list.innerHTML = keys.map((k, i) => `
         <div class="key-item">
-          <span class="\${k.used ? 'used' : ''}">\${k.code}</span>
-          \${!k.used ? '<button onclick="markUsed(' + i + ')">Mark Used</button>' : ''}
+          <span class="${k.used ? 'used' : ''}">${k.code}</span>
+          ${!k.used ? '<button onclick="markUsed(' + i + ')">Mark Used</button>' : ''}
         </div>
-      \`).join('');
+      `).join('');
     }
 
+    // Initial render of the keys when the page loads
     renderKeys();
   </script>
 </body>
