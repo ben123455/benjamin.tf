@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Panel - Spin Keys</title>
+  <style>
+    body {
+      background: #000;
+      color: #00ffff;
+      font-family: 'Inter', sans-serif;
+      padding: 40px;
+      text-align: center;
+    }
+    input, button {
+      padding: 10px;
+      margin: 10px;
+      font-size: 1em;
+      border-radius: 8px;
+      border: none;
+    }
+    button {
+      background-color: #00ffff;
+      color: #000;
+      cursor: pointer;
+    }
+    .key-list {
+      margin-top: 30px;
+      text-align: left;
+      max-width: 500px;
+      margin-inline: auto;
+    }
+    .key-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+    .used {
+      text-decoration: line-through;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <h1>Admin Panel</h1>
+  <p>Generate and manage spin keys</p>
+
+  <input type="number" id="keyCount" placeholder="Number of keys" min="1" />
+  <button onclick="generateKeys()">Generate</button>
+  <button onclick="exportKeys()">Export</button>
+
+  <div class="key-list" id="keyList"></div>
+
+  <script>
+    const KEY_STORAGE = 'spin_keys';
+
+    function loadKeys() {
+      return JSON.parse(localStorage.getItem(KEY_STORAGE) || '[]');
+    }
+
+    function saveKeys(keys) {
+      localStorage.setItem(KEY_STORAGE, JSON.stringify(keys));
+      renderKeys();
+    }
+
+    function generateKeys() {
+      const count = parseInt(document.getElementById('keyCount').value);
+      if (!count || count <= 0) return alert('Enter a valid number');
+      let keys = loadKeys();
+
+      for (let i = 0; i < count; i++) {
+        keys.push({ code: Math.random().toString(36).substr(2, 6).toUpperCase(), used: false });
+      }
+
+      saveKeys(keys);
+    }
+
+    function markUsed(index) {
+      let keys = loadKeys();
+      keys[index].used = true;
+      saveKeys(keys);
+    }
+
+    function exportKeys() {
+      const keys = loadKeys();
+      const exportText = keys.map(k => `${k.code}, ${k.used ? 'USED' : 'UNUSED'}`).join('\\n');
+      const blob = new Blob([exportText], { type: 'text/plain' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'spin_keys.txt';
+      link.click();
+    }
+
+    function renderKeys() {
+      const keys = loadKeys();
+      const list = document.getElementById('keyList');
+      list.innerHTML = keys.map((k, i) => \`
+        <div class="key-item">
+          <span class="\${k.used ? 'used' : ''}">\${k.code}</span>
+          \${!k.used ? '<button onclick="markUsed(' + i + ')">Mark Used</button>' : ''}
+        </div>
+      \`).join('');
+    }
+
+    renderKeys();
+  </script>
+</body>
+</html>
