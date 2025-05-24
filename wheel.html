@@ -134,19 +134,20 @@
       const prizeDisplay = document.getElementById("prize-display");
       const result = document.getElementById("result");
       let cycleCount = 0;
+      let currentPrize = "";
 
       // Random Prize Loop
       const prizeInterval = setInterval(() => {
-        const randomPrize = PRIZES[Math.floor(Math.random() * PRIZES.length)];
-        prizeDisplay.textContent = randomPrize;
+        currentPrize = PRIZES[Math.floor(Math.random() * PRIZES.length)];
+        prizeDisplay.textContent = currentPrize;
         cycleCount++;
         
         // Stop after 4 seconds and show the final prize
         if (cycleCount >= 20) { // Show random prizes for 4 seconds
           clearInterval(prizeInterval);
 
-          const finalPrize = PRIZES[Math.floor(Math.random() * PRIZES.length)];
-          result.innerHTML = `<h3>You won: 🎉 ${finalPrize} 🎉</h3>`;
+          // Show the final prize
+          result.innerHTML = `<h3>You won: 🎉 ${currentPrize} 🎉</h3>`;
           result.style.display = "block";
           hasSpun = true;
 
