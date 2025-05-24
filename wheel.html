@@ -4,148 +4,79 @@
   <meta charset="UTF-8" />
   <title>Spin the Wheel</title>
   <style>
-    /* General Body */
     body {
-      background: url('https://example.com/ark-texture.jpg') no-repeat center center fixed;
-      background-size: cover;
-      color: #E4E4E4;
-      font-family: 'Arial', sans-serif;
+      background: #000;
+      color: #00ffff;
+      font-family: 'Inter', sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
       text-align: center;
-      overflow: hidden;
     }
 
-    /* Container with survival design */
     .container {
-      background: rgba(20, 20, 20, 0.85);
+      background-color: rgba(20, 20, 20, 0.9);
       padding: 40px;
-      border-radius: 20px;
-      box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+      border-radius: 16px;
+      box-shadow: 0 0 20px #00ffff44;
       width: 90%;
       max-width: 600px;
-      border: 3px solid #1c1c1c;
-      background-image: url('https://example.com/rock-pattern.jpg');
-      background-size: cover;
+      text-align: center;
     }
 
-    /* Inputs and Buttons */
     input, button {
-      margin-top: 15px;
+      margin-top: 10px;
       padding: 15px;
-      font-size: 1.1em;
-      border-radius: 10px;
-      border: 2px solid #00ffcc;
-      transition: all 0.3s ease;
-      background-color: rgba(0, 255, 255, 0.2);
-      color: #E4E4E4;
-    }
-
-    input::placeholder {
-      color: #00ffcc;
+      font-size: 1em;
+      border-radius: 8px;
+      border: none;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     button {
-      background-color: #00ffcc;
+      background-color: #00ffff;
       color: #000;
       cursor: pointer;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      border: 2px solid #1c1c1c;
     }
 
     button:hover {
       transform: scale(1.1);
       box-shadow: 0 0 20px rgba(0, 255, 255, 0.7);
-      background-color: #00cc99;
     }
 
-    button:active {
-      transform: scale(1);
-      box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
-      background-color: #009999;
+    #prize-display {
+      font-size: 1.5em;
+      margin-top: 20px;
+      color: #00ffff;
+      font-weight: bold;
+      text-transform: uppercase;
     }
 
-    /* Prize wheel area */
-    .wheel-box {
-      margin-top: 30px;
-      font-size: 1.8em;
-      border: 5px solid #00ffcc;
-      border-radius: 50%;
-      width: 350px;
-      height: 350px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      background-image: url('https://example.com/metal-wheel-texture.jpg');
-      background-size: cover;
-      box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
-    }
-
-    .wheel-box.spin {
-      animation: rotateWheel 5s ease-out forwards;
-    }
-
-    /* Spin Button */
     .spin-button {
       margin-top: 20px;
-      background-color: #ffcc00;
-      color: #000;
-      text-transform: uppercase;
-      padding: 15px 30px;
-      border-radius: 8px;
-      border: 2px solid #1c1c1c;
+      background-color: #ff4081;
+      color: #fff;
     }
 
     .spin-button:hover {
-      background-color: #ffaa00;
+      background-color: #f50057;
       transform: scale(1.1);
     }
 
     .spin-button:active {
       transform: scale(1);
-      background-color: #e67e00;
+      box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
     }
 
-    /* Prize result text */
     #result {
-      margin-top: 30px;
+      margin-top: 20px;
       font-size: 1.5em;
-      color: #00ffcc;
+      color: #00ffff;
       font-weight: bold;
       text-transform: uppercase;
       display: none;
-      text-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
-    }
-
-    /* Wheel rotation animation */
-    @keyframes rotateWheel {
-      0% {
-        transform: rotate(0deg);
-      }
-      100% {
-        transform: rotate(3600deg); /* 10 full rotations */
-      }
-    }
-
-    /* Result animation */
-    @keyframes showResult {
-      0% {
-        opacity: 0;
-        transform: scale(0.8);
-      }
-      100% {
-        opacity: 1;
-        transform: scale(1);
-      }
-    }
-
-    #result.show {
-      animation: showResult 0.5s ease-out forwards;
     }
 
   </style>
@@ -156,10 +87,8 @@
     <input id="keyInput" placeholder="e.g. ABC123" />
     <button onclick="validateKey()">Submit</button>
 
-    <div id="wheel" style="display:none;">
-      <div class="wheel-box" id="wheelBox">Ready to Spin</div>
-      <button class="spin-button" onclick="spinPrize()">Spin the Prize</button>
-    </div>
+    <div id="prize-display">Ready to Spin</div>
+    <button class="spin-button" onclick="spinPrize()" style="display:none;">Spin the Prize</button>
 
     <div id="result" style="margin-top:20px;"></div>
   </div>
@@ -174,49 +103,60 @@
     let hasSpun = false;
     let currentKeyIndex = -1;
 
+    // Get the stored keys from localStorage
     function getStoredKeys() {
       return JSON.parse(localStorage.getItem("spin_keys") || "[]");
     }
 
+    // Save the keys back to localStorage
     function saveKeys(keys) {
       localStorage.setItem("spin_keys", JSON.stringify(keys));
     }
 
+    // Validate entered key
     function validateKey() {
       const inputKey = document.getElementById("keyInput").value.trim().toUpperCase();
       const keys = getStoredKeys();
       const index = keys.findIndex(k => k.code === inputKey && !k.used);
 
       if (index !== -1 && !hasSpun) {
-        document.getElementById("wheel").style.display = "block"; // Show the wheel
+        document.querySelector(".spin-button").style.display = "inline-block"; // Show the spin button
         currentKeyIndex = index;
       } else {
         alert("Invalid or used key.");
       }
     }
 
+    // Function to display random prizes until final one is selected
     function spinPrize() {
       if (hasSpun || currentKeyIndex === -1) return;
 
-      const wheelBox = document.getElementById("wheelBox");
-      wheelBox.classList.add("spin"); // Trigger the spinning animation
-      wheelBox.textContent = "Spinning...";
+      const prizeDisplay = document.getElementById("prize-display");
+      const result = document.getElementById("result");
+      let cycleCount = 0;
+      let currentPrize = "";
 
-      setTimeout(() => {
-        const prize = PRIZES[Math.floor(Math.random() * PRIZES.length)];
-        const resultText = `<h3>You won: 🎉 ${prize} 🎉</h3>`;
-        const result = document.getElementById("result");
+      // Random Prize Loop
+      const prizeInterval = setInterval(() => {
+        currentPrize = PRIZES[Math.floor(Math.random() * PRIZES.length)];
+        prizeDisplay.textContent = currentPrize;
+        cycleCount++;
+        
+        // Stop after 4 seconds and show the final prize
+        if (cycleCount >= 20) { // Show random prizes for 4 seconds
+          clearInterval(prizeInterval);
 
-        result.innerHTML = resultText;
-        result.classList.add("show"); // Show the result with animation
-        wheelBox.textContent = prize;
+          // Show the final prize
+          result.innerHTML = `<h3>You won: 🎉 ${currentPrize} 🎉</h3>`;
+          result.style.display = "block";
+          hasSpun = true;
 
-        hasSpun = true;
-
-        const keys = getStoredKeys();
-        keys[currentKeyIndex].used = true;
-        saveKeys(keys);
-      }, 5000); // Spin for 5 seconds
+          // Mark the key as used
+          const keys = getStoredKeys();
+          keys[currentKeyIndex].used = true;
+          saveKeys(keys);
+        }
+      }, 200); // Change prize every 200ms
     }
   </script>
 </body>
