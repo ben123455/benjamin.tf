@@ -58,12 +58,9 @@
       align-items: center;
       justify-content: center;
       position: relative;
-      transition: transform 2s cubic-bezier(0.25, 0.8, 0.25, 1);
+      transition: transform 4s cubic-bezier(0.25, 0.8, 0.25, 1);
       margin-bottom: 20px;
-    }
-
-    .wheel-box.spin {
-      animation: rotateWheel 3s ease-out forwards;
+      display: none; /* Initially hidden */
     }
 
     .spin-button {
@@ -97,7 +94,7 @@
         transform: rotate(0deg);
       }
       100% {
-        transform: rotate(1440deg); /* 4 full rotations */
+        transform: rotate(3600deg); /* 10 full rotations */
       }
     }
 
@@ -124,10 +121,10 @@
     <input id="keyInput" placeholder="e.g. ABC123" />
     <button onclick="validateKey()">Submit</button>
 
-    <div id="wheel" style="display:none;">
-      <div class="wheel-box" id="wheelBox">Ready to Spin</div>
-      <button class="spin-button" onclick="spinWheel()">Spin the Wheel</button>
+    <div id="wheel" class="wheel-box">
+      Ready to Spin
     </div>
+    <button class="spin-button" onclick="spinWheel()" style="display:none;">Spin the Wheel</button>
 
     <div id="result" style="margin-top:20px;"></div>
   </div>
@@ -138,34 +135,43 @@
       "Mystery Box #5", "Mystery Box #6", "Mystery Box #7", "Mystery Box #8", 
       "Mystery Box #9", "Mystery Box #10"
     ];
+
     let hasSpun = false;
     let currentKeyIndex = -1;
 
+    // Get the stored keys from localStorage
     function getStoredKeys() {
       return JSON.parse(localStorage.getItem("spin_keys") || "[]");
     }
 
+    // Save the keys back to localStorage
     function saveKeys(keys) {
       localStorage.setItem("spin_keys", JSON.stringify(keys));
     }
 
+    // Validate entered key
     function validateKey() {
       const inputKey = document.getElementById("keyInput").value.trim().toUpperCase();
       const keys = getStoredKeys();
       const index = keys.findIndex(k => k.code === inputKey && !k.used);
 
       if (index !== -1 && !hasSpun) {
-        document.getElementById("wheel").style.display = "block";
+        document.getElementById("wheel").style.display = "block"; // Show the wheel
+        document.querySelector(".spin-button").style.display = "inline-block"; // Show the spin button
         currentKeyIndex = index;
       } else {
         alert("Invalid or used key.");
       }
     }
 
+    // Spin the wheel with random color change and longer spin duration
     function spinWheel() {
       if (hasSpun || currentKeyIndex === -1) return;
 
-      const wheelBox = document.getElementById("wheelBox");
+      const wheelBox = document.getElementById("wheel");
+      const randomColor = getRandomColor();
+      wheelBox.style.backgroundColor = randomColor; // Change the wheel color randomly
+
       wheelBox.classList.add("spin"); // Trigger the spinning animation
       wheelBox.textContent = "Spinning...";
 
@@ -183,7 +189,15 @@
         const keys = getStoredKeys();
         keys[currentKeyIndex].used = true;
         saveKeys(keys);
-      }, 3000);
+      }, 5000); // Spin for longer (5 seconds)
+    }
+
+    // Helper function to get a random color for the wheel
+    function getRandomColor() {
+      const colors = [
+        "#FF5733", "#33FF57", "#3357FF", "#F5A623", "#D500F9", "#00E5FF", "#FF1493", "#FF6347"
+      ];
+      return colors[Math.floor(Math.random() * colors.length)];
     }
   </script>
 </body>
