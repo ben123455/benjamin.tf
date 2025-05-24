@@ -87,13 +87,45 @@
       box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
     }
 
+    .redirect-button {
+      padding: 10px 20px;
+      background-color: #00ffff;
+      color: #0d0d0d;
+      font-size: 1em;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      margin: 10px;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    }
+
+    .redirect-button:hover {
+      background-color: #00ffff33;
+      transform: scale(1.05);
+    }
+
+    .redirect-button:active {
+      transform: scale(1);
+      box-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+    }
+
     @keyframes glow {
       0%, 50%, 100% {
         text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff, 0 0 15px #00ffff, 0 0 20px #00ffff, 0 0 25px #00ffff;
       }
     }
 
-    /* Hide iframe player */
+    /* Style for the SoundCloud player */
+    .soundcloud-player {
+      background-color: #1e1e1e;
+      padding: 20px;
+      border-radius: 12px;
+      margin-top: 20px;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
+    }
+
+    /* Hide iframe player initially */
     #soundcloud-player {
       display: none;
     }
@@ -108,25 +140,31 @@
     <div class="links">
       <a href="https://discord.com/users/548894775252877313" target="_blank">Discord</a>
     </div>
-  </div>
 
-  <!-- Hidden SoundCloud player -->
-  <iframe 
-    id="soundcloud-player"
-    width="100%" 
-    height="166" 
-    scrolling="no" 
-    frameborder="no" 
-    allow="autoplay"
-    src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/4batz/act-ii-date-8-remix&color=%2300ffff&auto_play=true&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false">
-  </iframe>
+    <!-- SoundCloud Embed -->
+    <div class="soundcloud-player">
+      <iframe 
+        id="soundcloud-player"
+        width="100%" 
+        height="166" 
+        scrolling="no" 
+        frameborder="no" 
+        allow="autoplay"
+        src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/4batz/act-ii-date-8-remix&color=%2300ffff&auto_play=true&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false">
+      </iframe>
+    </div>
+
+    <!-- Redirect Buttons -->
+    <button class="redirect-button" onclick="window.location.href='wheel.html'">Go to Wheel</button>
+    <button class="redirect-button" onclick="window.location.href='admin.html'">Go to Admin</button>
+  </div>
 
   <script>
     function startMusic() {
       document.querySelector('.overlay').style.display = 'block';
       document.querySelector('.start-button').style.display = 'none';
 
-      // Force playback on user interaction
+      // Display the SoundCloud player
       const iframe = document.getElementById('soundcloud-player');
       iframe.style.display = 'block';
 
